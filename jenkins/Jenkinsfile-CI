@@ -8,7 +8,7 @@ pipeline {
 		sh 'mvn compile'
            }
         }
-stage('codereview-pmd') {
+        stage('codereview-pmd') {
 	   steps {
                 echo 'codereview..'
 		sh 'mvn -P metrics pmd:pmd'
@@ -19,11 +19,33 @@ stage('codereview-pmd') {
                }
            }		
         }
+        stage('unit-test') {
+	   steps {
+                echo 'unittest..'
+	        sh 'mvn test'
+                 }
+	   post {
+               success {
+                   junit 'target/surefire-reports/*.xml'
+               }
+           }			
+        }
+        stage('codecoverage') {
+	   steps {
+                echo 'unittest..'
+	        sh 'mvn verify'
+                 }
+	   post {
+               success {
+                   jacoco buildOverBuild: true, deltaBranchCoverage: '20', deltaClassCoverage: '20', deltaComplexityCoverage: '20', deltaInstructionCoverage: '20', deltaLineCoverage: '20', deltaMethodCoverage: '20'
+               }
+           }			
+        }
+        stage('package') {
+	   steps {
+                echo 'package......'
+		sh 'mvn package'	
+           }		
+        }
+    }
 }
-}
-
-        	
-           		
-        
-    
-
