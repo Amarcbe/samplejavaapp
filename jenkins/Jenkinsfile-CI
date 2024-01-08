@@ -8,8 +8,20 @@ pipeline {
 		sh 'mvn compile'
            }
         }
+stage('codereview-pmd') {
+	   steps {
+                echo 'codereview..'
+		sh 'mvn -P metrics pmd:pmd'
+           }
+	   post {
+               success {
+		   recordIssues enabledForFailure: true, tool: pmdParser(pattern: '**/target/pmd.xml')
+               }
+           }		
+        }
 }
 }
+
         	
            		
         
